@@ -1,0 +1,48 @@
+{
+  "name": "task-manager",
+  "version": "1.0.0",
+  "description": "A production-grade Task Manager API built with Express, TypeScript, and Clean Architecture",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "nodemon --exec tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "tsx prisma/seed.ts",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "task-manager",
+    "express",
+    "typescript",
+    "clean-architecture"
+  ],
+  "author": "Pedram Arabnejad",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^7.9.0",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.1.1",
+    "@types/uuid": "^10.0.0",
+    "nodemon": "^3.1.14",
+    "prisma": "^7.9.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
+  }
+}
