@@ -1,5 +1,5 @@
-import { RefreshToken } from '../../../domain/entities/RefreshToken';
-import { IRefreshTokenRepository } from '../../../domain/interfaces/IRefreshTokenRepository';
+import { RefreshToken } from '../../domain/entities/RefreshToken';
+import { IRefreshTokenRepository } from '../../domain/interfaces/IRefreshTokenRepository';
 import prisma from '../database/prisma/PrismaClient';
 
 export class PrismaRefreshTokenRepository implements IRefreshTokenRepository {

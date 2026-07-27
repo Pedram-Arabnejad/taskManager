@@ -1,6 +1,6 @@
-import { User } from '../../../domain/entities/User';
-import { Role } from '../../../domain/enums/Role';
-import { IUserRepository } from '../../../domain/interfaces/IUserRepository';
+import { User } from '../../domain/entities/User';
+import { Role } from '../../domain/enums/Role';
+import { IUserRepository } from '../../domain/interfaces/IUserRepository';
 import prisma from '../database/prisma/PrismaClient';
 
 export class PrismaUserRepository implements IUserRepository {
