@@ -1,7 +1,7 @@
-import { Task } from '../../../domain/entities/Task';
-import { TaskStatus } from '../../../domain/enums/TaskStatus';
-import { TaskPriority } from '../../../domain/enums/TaskPriority';
-import { ITaskRepository, TaskFilters } from '../../../domain/interfaces/ITaskRepository';
+import { Task } from '../../domain/entities/Task';
+import { TaskStatus } from '../../domain/enums/TaskStatus';
+import { TaskPriority } from '../../domain/enums/TaskPriority';
+import { ITaskRepository, TaskFilters } from '../../domain/interfaces/ITaskRepository';
 import prisma from '../database/prisma/PrismaClient';
 import { Prisma } from '@prisma/client';
 
