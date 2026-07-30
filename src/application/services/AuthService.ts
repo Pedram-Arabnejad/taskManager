@@ -8,8 +8,8 @@ import {
   TokenPayload,
   AuthTokens,
 } from '../../domain/interfaces/IAuthService';
-import { JwtProvider } from '../infrastructure/auth/JwtProvider';
-import { PasswordHasher } from '../infrastructure/auth/PasswordHasher';
+import { JwtProvider } from '../../infrastructure/auth/JwtProvider';
+import { PasswordHasher } from '../../infrastructure/auth/PasswordHasher';
 
 export class AuthService implements IAuthService {
   constructor(
