@@ -12,13 +12,13 @@ export class JwtProvider {
   signAccessToken(payload: TokenPayload): string {
     return jwt.sign(payload, this.accessSecret, {
       expiresIn: this.accessExpiresIn,
-    });
+    } as jwt.SignOptions);
   }
 
   signRefreshToken(payload: Pick<TokenPayload, 'userId'>): string {
     return jwt.sign(payload, this.refreshSecret, {
       expiresIn: this.refreshExpiresIn,
-    });
+    } as jwt.SignOptions);
   }
 
   verifyAccessToken(token: string): TokenPayload {

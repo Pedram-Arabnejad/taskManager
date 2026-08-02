@@ -7,6 +7,7 @@ import {
   IAuthService,
   TokenPayload,
   AuthTokens,
+  AuthResult,
 } from '../../domain/interfaces/IAuthService';
 import { JwtProvider } from '../../infrastructure/auth/JwtProvider';
 import { PasswordHasher } from '../../infrastructure/auth/PasswordHasher';
@@ -23,7 +24,7 @@ export class AuthService implements IAuthService {
     email: string,
     password: string,
     name: string,
-  ): Promise<AuthTokens & { user: Omit<User, 'password'> }> {
+  ): Promise<AuthResult> {
     const existing = await this.userRepo.findByEmail(email);
     if (existing) {
       throw new Error('User with this email already exists');
@@ -40,13 +41,13 @@ export class AuthService implements IAuthService {
     const savedUser = await this.userRepo.create(user);
     const tokens = await this.generateTokens(savedUser);
 
-    return { user: this.omitPassword(savedUser), ...tokens };
+    return { user: this.toPublicUser(savedUser), tokens };
   }
 
   async login(
     email: string,
     password: string,
-  ): Promise<AuthTokens & { user: Omit<User, 'password'> }> {
+  ): Promise<AuthResult> {
     const user = await this.userRepo.findByEmail(email);
     if (!user) {
       throw new Error('Invalid email or password');
@@ -58,7 +59,7 @@ export class AuthService implements IAuthService {
     }
 
     const tokens = await this.generateTokens(user);
-    return { user: this.omitPassword(user), ...tokens };
+    return { user: this.toPublicUser(user), tokens };
   }
 
   async refresh(refreshToken: string): Promise<AuthTokens> {
@@ -128,8 +129,14 @@ export class AuthService implements IAuthService {
     return { accessToken, refreshToken };
   }
 
-  private omitPassword(user: User): Omit<User, 'password'> {
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+  private toPublicUser(user: User): AuthResult['user'] {
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
   }
 }

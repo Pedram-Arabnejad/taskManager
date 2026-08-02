@@ -10,6 +10,10 @@ import { TaskPriority } from '../../domain/enums/TaskPriority';
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
+  private static queryString(value: unknown): string | undefined {
+    return typeof value === 'string' ? value : undefined;
+  }
+
   async createTask(req: AuthRequest, res: Response): Promise<void> {
     if (!req.user) {
       res.status(401).json({ status: 'error', message: 'Authentication required' });
@@ -41,7 +45,10 @@ export class TaskController {
     }
 
     try {
-      const task = await this.taskService.getTaskById(req.params.id, req.user.userId);
+      const task = await this.taskService.getTaskById(
+        req.params.id as string,
+        req.user.userId,
+      );
       res.status(200).json(TaskResponse.from(task));
     } catch (error: any) {
       const statusCode = error.message === 'Task not found' ? 404 : 403;
@@ -55,13 +62,16 @@ export class TaskController {
       return;
     }
 
+    const page = TaskController.queryString(req.query.page);
+    const limit = TaskController.queryString(req.query.limit);
+
     const filters = {
-      status: req.query.status as TaskStatus | undefined,
-      priority: req.query.priority as TaskPriority | undefined,
-      page: req.query.page ? parseInt(req.query.page as string) : undefined,
-      limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
-      sortBy: req.query.sortBy as string | undefined,
-      sortOrder: req.query.sortOrder as 'asc' | 'desc' | undefined,
+      status: TaskController.queryString(req.query.status) as TaskStatus | undefined,
+      priority: TaskController.queryString(req.query.priority) as TaskPriority | undefined,
+      page: page ? parseInt(page, 10) : undefined,
+      limit: limit ? parseInt(limit, 10) : undefined,
+      sortBy: TaskController.queryString(req.query.sortBy),
+      sortOrder: TaskController.queryString(req.query.sortOrder) as 'asc' | 'desc' | undefined,
     };
 
     try {
@@ -85,7 +95,10 @@ export class TaskController {
     }
 
     try {
-      const task = await this.taskService.updateTask(req.params.id, req.user.userId, {
+      const task = await this.taskService.updateTask(
+        req.params.id as string,
+        req.user.userId,
+        {
         title: req.body.title,
         description: req.body.description,
         status: req.body.status,
@@ -105,7 +118,10 @@ export class TaskController {
     }
 
     try {
-      await this.taskService.deleteTask(req.params.id, req.user.userId);
+      await this.taskService.deleteTask(
+        req.params.id as string,
+        req.user.userId,
+      );
       res.status(200).json({ status: 'success', message: 'Task deleted successfully' });
     } catch (error: any) {
       const statusCode = error.message === 'Task not found' ? 404 : 403;

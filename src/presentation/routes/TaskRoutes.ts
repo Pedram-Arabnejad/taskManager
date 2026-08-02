@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { TaskController } from '../controllers/TaskController';
 import { authMiddleware } from '../middlewares/AuthMiddleware';
-import { roleMiddleware } from '../middlewares/RoleMiddleware';
 import { JwtProvider } from '../../infrastructure/auth/JwtProvider';
 
 export const createTaskRoutes = (
