@@ -11,6 +11,10 @@ import {
 } from '../../domain/interfaces/IAuthService';
 import { JwtProvider } from '../../infrastructure/auth/JwtProvider';
 import { PasswordHasher } from '../../infrastructure/auth/PasswordHasher';
+import {
+  ConflictError,
+  UnauthorizedError,
+} from '../../domain/errors/AppError';
 
 export class AuthService implements IAuthService {
   constructor(
@@ -27,7 +31,7 @@ export class AuthService implements IAuthService {
   ): Promise<AuthResult> {
     const existing = await this.userRepo.findByEmail(email);
     if (existing) {
-      throw new Error('User with this email already exists');
+      throw new ConflictError('User with this email already exists');
     }
 
     const hashedPassword = await this.passwordHasher.hash(password);
@@ -50,12 +54,12 @@ export class AuthService implements IAuthService {
   ): Promise<AuthResult> {
     const user = await this.userRepo.findByEmail(email);
     if (!user) {
-      throw new Error('Invalid email or password');
+      throw new UnauthorizedError('Invalid email or password');
     }
 
     const isValid = await this.passwordHasher.compare(password, user.password);
     if (!isValid) {
-      throw new Error('Invalid email or password');
+      throw new UnauthorizedError('Invalid email or password');
     }
 
     const tokens = await this.generateTokens(user);
@@ -67,12 +71,12 @@ export class AuthService implements IAuthService {
     try {
       payload = this.jwtProvider.verifyRefreshToken(refreshToken);
     } catch {
-      throw new Error('Invalid or expired refresh token');
+      throw new UnauthorizedError('Invalid or expired refresh token');
     }
 
     const storedToken = await this.refreshTokenRepo.findByToken(refreshToken);
     if (!storedToken || storedToken.isExpired()) {
-      throw new Error('Refresh token has been revoked or expired');
+      throw new UnauthorizedError('Refresh token has been revoked or expired');
     }
 
     // Refresh token rotation: delete old, create new
@@ -80,7 +84,7 @@ export class AuthService implements IAuthService {
 
     const user = await this.userRepo.findById(payload.userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new UnauthorizedError('User not found');
     }
 
     return this.generateTokens(user);
@@ -101,7 +105,7 @@ export class AuthService implements IAuthService {
     try {
       return this.jwtProvider.verifyAccessToken(token);
     } catch {
-      throw new Error('Invalid or expired access token');
+      throw new UnauthorizedError('Invalid or expired access token');
     }
   }
 
