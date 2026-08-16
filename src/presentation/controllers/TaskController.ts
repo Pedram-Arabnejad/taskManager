@@ -26,16 +26,12 @@ export class TaskController {
       return;
     }
 
-    try {
-      const task = await this.taskService.createTask(req.user.userId, {
-        title: req.body.title,
-        description: req.body.description,
-        priority: req.body.priority,
-      });
-      res.status(201).json(TaskResponse.from(task));
-    } catch (error: any) {
-      res.status(400).json({ status: 'error', message: error.message });
-    }
+    const task = await this.taskService.createTask(req.user.userId, {
+      title: req.body.title,
+      description: req.body.description,
+      priority: req.body.priority,
+    });
+    res.status(201).json(TaskResponse.from(task));
   }
 
   async getTaskById(req: AuthRequest, res: Response): Promise<void> {
@@ -44,16 +40,11 @@ export class TaskController {
       return;
     }
 
-    try {
-      const task = await this.taskService.getTaskById(
-        req.params.id as string,
-        req.user.userId,
-      );
-      res.status(200).json(TaskResponse.from(task));
-    } catch (error: any) {
-      const statusCode = error.message === 'Task not found' ? 404 : 403;
-      res.status(statusCode).json({ status: 'error', message: error.message });
-    }
+    const task = await this.taskService.getTaskById(
+      req.params.id as string,
+      req.user.userId,
+    );
+    res.status(200).json(TaskResponse.from(task));
   }
 
   async getUserTasks(req: AuthRequest, res: Response): Promise<void> {
@@ -74,12 +65,8 @@ export class TaskController {
       sortOrder: TaskController.queryString(req.query.sortOrder) as 'asc' | 'desc' | undefined,
     };
 
-    try {
-      const tasks = await this.taskService.getUserTasks(req.user.userId, filters);
-      res.status(200).json(tasks.map(TaskResponse.from));
-    } catch (error: any) {
-      res.status(400).json({ status: 'error', message: error.message });
-    }
+    const tasks = await this.taskService.getUserTasks(req.user.userId, filters);
+    res.status(200).json(tasks.map(TaskResponse.from));
   }
 
   async updateTask(req: AuthRequest, res: Response): Promise<void> {
@@ -94,21 +81,17 @@ export class TaskController {
       return;
     }
 
-    try {
-      const task = await this.taskService.updateTask(
-        req.params.id as string,
-        req.user.userId,
-        {
+    const task = await this.taskService.updateTask(
+      req.params.id as string,
+      req.user.userId,
+      {
         title: req.body.title,
         description: req.body.description,
         status: req.body.status,
         priority: req.body.priority,
-      });
-      res.status(200).json(TaskResponse.from(task));
-    } catch (error: any) {
-      const statusCode = error.message === 'Task not found' ? 404 : 403;
-      res.status(statusCode).json({ status: 'error', message: error.message });
-    }
+      },
+    );
+    res.status(200).json(TaskResponse.from(task));
   }
 
   async deleteTask(req: AuthRequest, res: Response): Promise<void> {
@@ -117,15 +100,10 @@ export class TaskController {
       return;
     }
 
-    try {
-      await this.taskService.deleteTask(
-        req.params.id as string,
-        req.user.userId,
-      );
-      res.status(200).json({ status: 'success', message: 'Task deleted successfully' });
-    } catch (error: any) {
-      const statusCode = error.message === 'Task not found' ? 404 : 403;
-      res.status(statusCode).json({ status: 'error', message: error.message });
-    }
+    await this.taskService.deleteTask(
+      req.params.id as string,
+      req.user.userId,
+    );
+    res.status(200).json({ status: 'success', message: 'Task deleted successfully' });
   }
 }

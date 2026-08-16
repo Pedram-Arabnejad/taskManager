@@ -1,9 +1,9 @@
+import { Prisma, Task as PrismaTask, TaskStatus as PrismaTaskStatus, TaskPriority as PrismaTaskPriority } from '@prisma/client';
 import { Task } from '../../domain/entities/Task';
 import { TaskStatus } from '../../domain/enums/TaskStatus';
 import { TaskPriority } from '../../domain/enums/TaskPriority';
 import { ITaskRepository, TaskFilters } from '../../domain/interfaces/ITaskRepository';
 import prisma from '../database/prisma/PrismaClient';
-import { Prisma } from '@prisma/client';
 
 export class PrismaTaskRepository implements ITaskRepository {
   async findById(id: string): Promise<Task | null> {
@@ -15,10 +15,10 @@ export class PrismaTaskRepository implements ITaskRepository {
     const where: Prisma.TaskWhereInput = { userId };
 
     if (filters?.status) {
-      where.status = filters.status;
+      where.status = filters.status as PrismaTaskStatus;
     }
     if (filters?.priority) {
-      where.priority = filters.priority as TaskPriority;
+      where.priority = filters.priority as PrismaTaskPriority;
     }
 
     const orderBy: Prisma.TaskOrderByWithRelationInput = {};
@@ -45,8 +45,8 @@ export class PrismaTaskRepository implements ITaskRepository {
         id: task.id,
         title: task.title,
         description: task.description,
-        status: task.status as any,
-        priority: task.priority as any,
+        status: task.status as PrismaTaskStatus,
+        priority: task.priority as PrismaTaskPriority,
         userId: task.userId,
       },
     });
@@ -59,8 +59,8 @@ export class PrismaTaskRepository implements ITaskRepository {
       data: {
         title: task.title,
         description: task.description,
-        status: task.status as any,
-        priority: task.priority as any,
+        status: task.status as PrismaTaskStatus,
+        priority: task.priority as PrismaTaskPriority,
       },
     });
     return this.toDomain(updated);
@@ -76,7 +76,13 @@ export class PrismaTaskRepository implements ITaskRepository {
     });
   }
 
-  private toDomain(data: any): Task {
+  async countAll(status?: TaskStatus): Promise<number> {
+    return prisma.task.count({
+      where: status ? { status } : {},
+    });
+  }
+
+  private toDomain(data: PrismaTask): Task {
     return new Task(
       data.id,
       data.title,

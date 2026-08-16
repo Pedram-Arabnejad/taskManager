@@ -1,3 +1,4 @@
+import { User as PrismaUser, Role as PrismaRole } from '@prisma/client';
 import { User } from '../../domain/entities/User';
 import { Role } from '../../domain/enums/Role';
 import { IUserRepository } from '../../domain/interfaces/IUserRepository';
@@ -21,7 +22,7 @@ export class PrismaUserRepository implements IUserRepository {
         email: user.email,
         password: user.password,
         name: user.name,
-        role: user.role as any,
+        role: user.role as PrismaRole,
       },
     });
     return this.toDomain(created);
@@ -33,7 +34,7 @@ export class PrismaUserRepository implements IUserRepository {
       data: {
         email: user.email,
         name: user.name,
-        role: user.role as any,
+        role: user.role as PrismaRole,
       },
     });
     return this.toDomain(updated);
@@ -55,7 +56,7 @@ export class PrismaUserRepository implements IUserRepository {
     };
   }
 
-  private toDomain(data: any): User {
+  private toDomain(data: PrismaUser): User {
     return new User(
       data.id,
       data.email,

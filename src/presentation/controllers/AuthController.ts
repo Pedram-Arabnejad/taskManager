@@ -15,16 +15,12 @@ export class AuthController {
       return;
     }
 
-    try {
-      const result = await this.authService.register(
-        req.body.email,
-        req.body.password,
-        req.body.name,
-      );
-      res.status(201).json(AuthResponse.from(result.user, result.tokens));
-    } catch (error: any) {
-      res.status(409).json({ status: 'error', message: error.message });
-    }
+    const result = await this.authService.register(
+      req.body.email,
+      req.body.password,
+      req.body.name,
+    );
+    res.status(201).json(AuthResponse.from(result.user, result.tokens));
   }
 
   async login(req: AuthRequest, res: Response): Promise<void> {
@@ -34,15 +30,11 @@ export class AuthController {
       return;
     }
 
-    try {
-      const result = await this.authService.login(
-        req.body.email,
-        req.body.password,
-      );
-      res.status(200).json(AuthResponse.from(result.user, result.tokens));
-    } catch (error: any) {
-      res.status(401).json({ status: 'error', message: error.message });
-    }
+    const result = await this.authService.login(
+      req.body.email,
+      req.body.password,
+    );
+    res.status(200).json(AuthResponse.from(result.user, result.tokens));
   }
 
   async refresh(req: AuthRequest, res: Response): Promise<void> {
@@ -52,12 +44,8 @@ export class AuthController {
       return;
     }
 
-    try {
-      const tokens = await this.authService.refresh(refreshToken);
-      res.status(200).json(tokens);
-    } catch (error: any) {
-      res.status(401).json({ status: 'error', message: error.message });
-    }
+    const tokens = await this.authService.refresh(refreshToken);
+    res.status(200).json(tokens);
   }
 
   async logout(req: AuthRequest, res: Response): Promise<void> {

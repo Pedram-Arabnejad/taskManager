@@ -1,6 +1,7 @@
 import { Task } from '../../domain/entities/Task';
 import { TaskStatus } from '../../domain/enums/TaskStatus';
 import { ITaskRepository } from '../../domain/interfaces/ITaskRepository';
+import { ForbiddenError, NotFoundError } from '../../domain/errors/AppError';
 import {
   ITaskService,
   CreateTaskInput,
@@ -27,11 +28,11 @@ export class TaskService implements ITaskService {
   async getTaskById(taskId: string, userId: string): Promise<Task> {
     const task = await this.taskRepo.findById(taskId);
     if (!task) {
-      throw new Error('Task not found');
+      throw new NotFoundError('Task not found');
     }
 
     if (!task.belongsToUser(userId)) {
-      throw new Error('You do not have access to this task');
+      throw new ForbiddenError('You do not have access to this task');
     }
 
     return task;
@@ -48,11 +49,11 @@ export class TaskService implements ITaskService {
   ): Promise<Task> {
     const task = await this.taskRepo.findById(taskId);
     if (!task) {
-      throw new Error('Task not found');
+      throw new NotFoundError('Task not found');
     }
 
     if (!task.belongsToUser(userId)) {
-      throw new Error('You do not have access to this task');
+      throw new ForbiddenError('You do not have access to this task');
     }
 
     const updatedTask = Task.create({
@@ -82,11 +83,11 @@ export class TaskService implements ITaskService {
   async deleteTask(taskId: string, userId: string): Promise<void> {
     const task = await this.taskRepo.findById(taskId);
     if (!task) {
-      throw new Error('Task not found');
+      throw new NotFoundError('Task not found');
     }
 
     if (!task.belongsToUser(userId)) {
-      throw new Error('You do not have access to this task');
+      throw new ForbiddenError('You do not have access to this task');
     }
 
     await this.taskRepo.delete(taskId);
