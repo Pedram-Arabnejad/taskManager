@@ -1,3 +1,4 @@
+import { RefreshToken as PrismaRefreshToken } from '@prisma/client';
 import { RefreshToken } from '../../domain/entities/RefreshToken';
 import { IRefreshTokenRepository } from '../../domain/interfaces/IRefreshTokenRepository';
 import prisma from '../database/prisma/PrismaClient';
@@ -40,7 +41,7 @@ export class PrismaRefreshTokenRepository implements IRefreshTokenRepository {
     return result.count;
   }
 
-  private toDomain(data: any): RefreshToken {
+  private toDomain(data: PrismaRefreshToken): RefreshToken {
     return new RefreshToken(
       data.id,
       data.token,
