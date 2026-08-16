@@ -76,6 +76,12 @@ export class PrismaTaskRepository implements ITaskRepository {
     });
   }
 
+  async countAll(status?: TaskStatus): Promise<number> {
+    return prisma.task.count({
+      where: status ? { status } : {},
+    });
+  }
+
   private toDomain(data: any): Task {
     return new Task(
       data.id,

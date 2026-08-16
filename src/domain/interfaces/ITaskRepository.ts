@@ -8,6 +8,7 @@ export interface ITaskRepository {
   update(task: Task): Promise<Task>;
   delete(id: string): Promise<void>;
   countByUserId(userId: string, status?: TaskStatus): Promise<number>;
+  countAll(status?: TaskStatus): Promise<number>;
 }
 
 export interface TaskFilters {

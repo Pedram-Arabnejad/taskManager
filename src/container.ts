@@ -5,8 +5,10 @@ import { JwtProvider } from './infrastructure/auth/JwtProvider';
 import { PasswordHasher } from './infrastructure/auth/PasswordHasher';
 import { AuthService } from './application/services/AuthService';
 import { TaskService } from './application/services/TaskService';
+import { AdminService } from './application/services/AdminService';
 import { AuthController } from './presentation/controllers/AuthController';
 import { TaskController } from './presentation/controllers/TaskController';
+import { AdminController } from './presentation/controllers/AdminController';
 
 export class Container {
   // Infrastructure
@@ -29,10 +31,12 @@ export class Container {
     this.passwordHasher,
   );
   readonly taskService = new TaskService(this.taskRepo);
+  readonly adminService = new AdminService(this.userRepo, this.taskRepo);
 
   // Presentation Controllers
   readonly authController = new AuthController(this.authService);
   readonly taskController = new TaskController(this.taskService);
+  readonly adminController = new AdminController(this.adminService);
 }
 
 export const container = new Container();

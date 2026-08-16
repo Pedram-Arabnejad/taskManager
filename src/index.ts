@@ -9,6 +9,7 @@ dotenv.config();
 import { container } from './container';
 import { createAuthRoutes } from './presentation/routes/AuthRoutes';
 import { createTaskRoutes } from './presentation/routes/TaskRoutes';
+import { createAdminRoutes } from './presentation/routes/AdminRoutes';
 import { errorHandler } from './presentation/middlewares/ErrorHandler';
 
 const app = express();
@@ -28,6 +29,7 @@ app.get('/api/health', (_req, res) => {
 // Routes
 app.use('/api/auth', createAuthRoutes(container.authController, container.jwtProvider));
 app.use('/api/tasks', createTaskRoutes(container.taskController, container.jwtProvider));
+app.use('/api/admin', createAdminRoutes(container.adminController, container.jwtProvider));
 
 // Error handling (must be last)
 app.use(errorHandler);
