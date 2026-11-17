@@ -1,0 +1,7 @@
+# pnpm settings live here (pnpm >= 11 no longer reads the "pnpm" field of
+# package.json). Only reviewed dependencies are allowed to run install scripts.
+allowBuilds:
+  esbuild: true
+  argon2: true
+  prisma: true
+  '@prisma/client': true
