@@ -1,0 +1,7 @@
+# Keep the repository byte-for-byte identical on Windows, macOS and Linux so
+# Prettier (endOfLine: lf) and CI checks agree with a local checkout.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.ico binary
