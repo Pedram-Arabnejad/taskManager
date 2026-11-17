@@ -32,6 +32,15 @@ export class ValidationError extends DomainError {
   }
 }
 
+export class InvalidEmailError extends DomainError {
+  readonly code = 'VALIDATION_ERROR';
+  readonly httpStatus = 400;
+
+  constructor(message = 'Email address is invalid') {
+    super(message, [{ field: 'email', message }]);
+  }
+}
+
 export class UnauthenticatedError extends DomainError {
   readonly code = 'UNAUTHENTICATED';
   readonly httpStatus = 401;
