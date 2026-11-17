@@ -152,6 +152,12 @@ export default tseslint.config(
     },
   },
 
+  /* in-memory fakes must satisfy async ports without performing any I/O */
+  {
+    files: ['tests/fakes/**/*.ts'],
+    rules: { '@typescript-eslint/require-await': 'off' },
+  },
+
   /* CLI scripts may write to stdout; application code may not */
   {
     files: ['prisma/**/*.ts'],

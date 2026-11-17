@@ -7,10 +7,12 @@ import type { AppContainer } from './container';
 import { errorHandler } from './presentation/http/middlewares/error-handler';
 import { notFoundHandler } from './presentation/http/middlewares/not-found';
 import { requestId } from './presentation/http/middlewares/request-id';
+import { createAuthRouter } from './presentation/http/routes/auth.routes';
 import { createHealthRouter } from './presentation/http/routes/health.routes';
 
 const BODY_LIMIT = '100kb';
 const HEALTH_PATH = '/health';
+const API_PREFIX = '/api/v1';
 
 /**
  * App factory: builds a fully wired Express app without opening a port,
@@ -43,6 +45,14 @@ export function createApp(container: AppContainer): Express {
   app.use(express.json({ limit: BODY_LIMIT }));
 
   app.use(HEALTH_PATH, createHealthRouter(container.healthProbe));
+
+  app.use(
+    `${API_PREFIX}/auth`,
+    createAuthRouter({
+      controller: container.authController,
+      authenticate: container.authenticate,
+    }),
+  );
 
   app.use(notFoundHandler);
   app.use(errorHandler);
