@@ -30,7 +30,17 @@ function shutdown(signal: NodeJS.Signals): void {
     }
 
     logger.info('http server closed');
-    process.exit(0);
+
+    container.prisma
+      .$disconnect()
+      .then(() => {
+        logger.info('database connection closed');
+        process.exit(0);
+      })
+      .catch((disconnectError: unknown) => {
+        logger.error({ err: disconnectError }, 'error while closing the database connection');
+        process.exit(1);
+      });
   });
 }
 

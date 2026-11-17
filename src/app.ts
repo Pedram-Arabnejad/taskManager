@@ -42,7 +42,7 @@ export function createApp(container: AppContainer): Express {
   );
   app.use(express.json({ limit: BODY_LIMIT }));
 
-  app.use(HEALTH_PATH, createHealthRouter());
+  app.use(HEALTH_PATH, createHealthRouter(container.healthProbe));
 
   app.use(notFoundHandler);
   app.use(errorHandler);

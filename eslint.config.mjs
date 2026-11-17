@@ -152,5 +152,14 @@ export default tseslint.config(
     },
   },
 
+  /* CLI scripts may write to stdout; application code may not */
+  {
+    files: ['prisma/**/*.ts'],
+    rules: {
+      'no-console': 'off',
+      'no-restricted-imports': 'off',
+    },
+  },
+
   prettier,
 );
