@@ -1,6 +1,8 @@
 import type { PrismaClient } from '@prisma/client';
 import type { RequestHandler } from 'express';
 
+import { ChangeUserRole } from './application/use-cases/admin/change-user-role';
+import { ListUsers } from './application/use-cases/admin/list-users';
 import { GetCurrentUser } from './application/use-cases/auth/get-current-user';
 import { LoginUser } from './application/use-cases/auth/login-user';
 import { LogoutUser } from './application/use-cases/auth/logout-user';
@@ -36,6 +38,7 @@ import { PrismaTaskRepository } from './infrastructure/repositories/prisma-task.
 import { PrismaUserRepository } from './infrastructure/repositories/prisma-user.repository';
 import { Argon2PasswordHasher } from './infrastructure/security/argon2-password-hasher';
 import { JwtTokenService } from './infrastructure/security/jwt-token-service';
+import { AdminController } from './presentation/http/controllers/admin.controller';
 import { AuthController } from './presentation/http/controllers/auth.controller';
 import { ProjectController } from './presentation/http/controllers/project.controller';
 import { TaskController } from './presentation/http/controllers/task.controller';
@@ -63,6 +66,14 @@ export interface ProjectsTasksSlice {
 export interface ProjectsTasksSliceDependencies {
   readonly projects: ProjectRepository;
   readonly tasks: TaskRepository;
+}
+
+export interface AdminSlice {
+  readonly adminController: AdminController;
+}
+
+export interface AdminSliceDependencies {
+  readonly users: UserRepository;
 }
 
 /**
@@ -115,7 +126,16 @@ export function buildProjectsTasksSlice(
   return { projectController, taskController };
 }
 
-export interface AppContainer extends AuthSlice, ProjectsTasksSlice {
+export function buildAdminSlice(dependencies: AdminSliceDependencies): AdminSlice {
+  const adminController = new AdminController({
+    listUsers: new ListUsers(dependencies.users),
+    changeUserRole: new ChangeUserRole(dependencies.users),
+  });
+
+  return { adminController };
+}
+
+export interface AppContainer extends AuthSlice, ProjectsTasksSlice, AdminSlice {
   readonly env: Env;
   readonly logger: AppLogger;
   readonly prisma: PrismaClient;
@@ -154,5 +174,6 @@ export function createContainer(): AppContainer {
     tokenService,
     ...buildAuthSlice({ users, refreshTokens, passwordHasher, tokenService }),
     ...buildProjectsTasksSlice({ projects, tasks }),
+    ...buildAdminSlice({ users }),
   };
 }

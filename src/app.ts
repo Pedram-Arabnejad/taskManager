@@ -7,6 +7,7 @@ import type { AppContainer } from './container';
 import { errorHandler } from './presentation/http/middlewares/error-handler';
 import { notFoundHandler } from './presentation/http/middlewares/not-found';
 import { requestId } from './presentation/http/middlewares/request-id';
+import { createAdminRouter } from './presentation/http/routes/admin.routes';
 import { createAuthRouter } from './presentation/http/routes/auth.routes';
 import { createHealthRouter } from './presentation/http/routes/health.routes';
 import { createProjectRouter } from './presentation/http/routes/project.routes';
@@ -70,6 +71,15 @@ export function createApp(container: AppContainer): Express {
     createTaskRouter({
       controller: container.taskController,
       authenticate: container.authenticate,
+    }),
+  );
+
+  app.use(
+    `${API_PREFIX}/admin`,
+    createAdminRouter({
+      controller: container.adminController,
+      authenticate: container.authenticate,
+      authorize: container.authorize,
     }),
   );
 

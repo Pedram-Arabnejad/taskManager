@@ -1,6 +1,12 @@
 import { randomUUID } from 'node:crypto';
 
-import { buildAuthSlice, buildProjectsTasksSlice, createContainer, type AppContainer } from '../../src/container';
+import {
+  buildAdminSlice,
+  buildAuthSlice,
+  buildProjectsTasksSlice,
+  createContainer,
+  type AppContainer,
+} from '../../src/container';
 import { Role } from '../../src/domain/entities/user';
 import { createApp } from '../../src/app';
 import { FakePasswordHasher } from '../fakes/fake-password-hasher';
@@ -40,6 +46,7 @@ export function createTestApp(): TestApp {
     tokenService,
     ...buildAuthSlice({ users, refreshTokens, passwordHasher, tokenService }),
     ...buildProjectsTasksSlice({ projects, tasks }),
+    ...buildAdminSlice({ users }),
   };
 
   return {
