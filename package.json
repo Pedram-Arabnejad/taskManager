@@ -1,44 +1,72 @@
 {
-  "name": "task-manager",
+  "name": "taskflow-express-api",
   "version": "1.0.0",
-  "description": "A production-grade Task Manager API built with Express, TypeScript, and Clean Architecture",
-  "main": "dist/index.js",
+  "private": true,
+  "description": "TaskFlow API — a multi-user task manager built with Express 5, PostgreSQL and Clean Architecture (manual DI, JWT refresh-token rotation, RBAC).",
+  "license": "MIT",
+  "author": "Pedram Arabnejad",
+  "main": "dist/server.js",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "dev": "nodemon --exec tsx src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/server.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "test": "jest --selectProjects unit",
+    "test:unit": "jest --selectProjects unit",
+    "test:integration": "jest --selectProjects integration --runInBand",
+    "test:cov": "jest --selectProjects unit --coverage",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:seed": "tsx prisma/seed.ts",
-    "lint": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@prisma/client": "^6.19.3",
-    "bcryptjs": "^3.0.3",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "helmet": "^8.3.0",
-    "jsonwebtoken": "^9.0.3"
-  },
-  "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/cookie-parser": "^1.4.10",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^26.1.1",
-    "nodemon": "^3.1.14",
-    "prisma": "^6.19.3",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.23.1",
-    "typescript": "^7.0.2"
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:seed": "tsx prisma/seed.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
-  "keywords": ["task-manager", "express", "typescript", "clean-architecture"],
-  "author": "Pedram Arabnejad",
-  "license": "MIT"
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "argon2": "^0.45.2",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "pino": "^10.4.0",
+    "pino-http": "^11.0.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/express": "^5.0.6",
+    "@types/jest": "29.5.14",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.6.6",
+    "@types/supertest": "^7.2.1",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
+    "jest": "29.7.0",
+    "pino-pretty": "^13.2.0",
+    "prettier": "^3.10.1",
+    "prisma": "^6.19.3",
+    "supertest": "^7.3.2",
+    "ts-jest": "29.4.15",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.73.0"
+  },
+  "keywords": [
+    "express",
+    "typescript",
+    "clean-architecture",
+    "postgresql",
+    "prisma",
+    "jwt"
+  ]
 }
