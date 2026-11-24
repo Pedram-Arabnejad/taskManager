@@ -7,6 +7,17 @@ import { LogoutUser } from './application/use-cases/auth/logout-user';
 import { RefreshSession } from './application/use-cases/auth/refresh-session';
 import { RegisterUser } from './application/use-cases/auth/register-user';
 import { SessionIssuer } from './application/use-cases/auth/session-issuer';
+import { CreateProject } from './application/use-cases/projects/create-project';
+import { DeleteProject } from './application/use-cases/projects/delete-project';
+import { GetProject } from './application/use-cases/projects/get-project';
+import { ListProjects } from './application/use-cases/projects/list-projects';
+import { UpdateProject } from './application/use-cases/projects/update-project';
+import { ChangeTaskStatus } from './application/use-cases/tasks/change-task-status';
+import { CreateTask } from './application/use-cases/tasks/create-task';
+import { DeleteTask } from './application/use-cases/tasks/delete-task';
+import { GetTask } from './application/use-cases/tasks/get-task';
+import { ListTasks } from './application/use-cases/tasks/list-tasks';
+import { UpdateTask } from './application/use-cases/tasks/update-task';
 import { env, type Env } from './config/env';
 import type { Role } from './domain/entities/user';
 import type { ProjectRepository } from './domain/repositories/project.repository';
@@ -26,6 +37,8 @@ import { PrismaUserRepository } from './infrastructure/repositories/prisma-user.
 import { Argon2PasswordHasher } from './infrastructure/security/argon2-password-hasher';
 import { JwtTokenService } from './infrastructure/security/jwt-token-service';
 import { AuthController } from './presentation/http/controllers/auth.controller';
+import { ProjectController } from './presentation/http/controllers/project.controller';
+import { TaskController } from './presentation/http/controllers/task.controller';
 import { authenticate } from './presentation/http/middlewares/authenticate';
 import { authorize } from './presentation/http/middlewares/authorize';
 
@@ -40,6 +53,16 @@ export interface AuthSliceDependencies {
   readonly refreshTokens: RefreshTokenRepository;
   readonly passwordHasher: PasswordHasher;
   readonly tokenService: TokenService;
+}
+
+export interface ProjectsTasksSlice {
+  readonly projectController: ProjectController;
+  readonly taskController: TaskController;
+}
+
+export interface ProjectsTasksSliceDependencies {
+  readonly projects: ProjectRepository;
+  readonly tasks: TaskRepository;
 }
 
 /**
@@ -69,7 +92,30 @@ export function buildAuthSlice(dependencies: AuthSliceDependencies): AuthSlice {
   };
 }
 
-export interface AppContainer extends AuthSlice {
+export function buildProjectsTasksSlice(
+  dependencies: ProjectsTasksSliceDependencies,
+): ProjectsTasksSlice {
+  const projectController = new ProjectController({
+    createProject: new CreateProject(dependencies.projects),
+    listProjects: new ListProjects(dependencies.projects),
+    getProject: new GetProject(dependencies.projects),
+    updateProject: new UpdateProject(dependencies.projects),
+    deleteProject: new DeleteProject(dependencies.projects),
+  });
+
+  const taskController = new TaskController({
+    createTask: new CreateTask(dependencies.tasks, dependencies.projects),
+    listTasks: new ListTasks(dependencies.tasks, dependencies.projects),
+    getTask: new GetTask(dependencies.tasks, dependencies.projects),
+    updateTask: new UpdateTask(dependencies.tasks, dependencies.projects),
+    changeTaskStatus: new ChangeTaskStatus(dependencies.tasks, dependencies.projects),
+    deleteTask: new DeleteTask(dependencies.tasks, dependencies.projects),
+  });
+
+  return { projectController, taskController };
+}
+
+export interface AppContainer extends AuthSlice, ProjectsTasksSlice {
   readonly env: Env;
   readonly logger: AppLogger;
   readonly prisma: PrismaClient;
@@ -89,6 +135,8 @@ export interface AppContainer extends AuthSlice {
 export function createContainer(): AppContainer {
   const prisma = createPrismaClient();
   const users = new PrismaUserRepository(prisma);
+  const projects = new PrismaProjectRepository(prisma);
+  const tasks = new PrismaTaskRepository(prisma);
   const refreshTokens = new PrismaRefreshTokenRepository(prisma);
   const passwordHasher = new Argon2PasswordHasher();
   const tokenService = new JwtTokenService();
@@ -99,11 +147,12 @@ export function createContainer(): AppContainer {
     prisma,
     healthProbe: new PrismaHealthProbe(prisma),
     users,
-    projects: new PrismaProjectRepository(prisma),
-    tasks: new PrismaTaskRepository(prisma),
+    projects,
+    tasks,
     refreshTokens,
     passwordHasher,
     tokenService,
     ...buildAuthSlice({ users, refreshTokens, passwordHasher, tokenService }),
+    ...buildProjectsTasksSlice({ projects, tasks }),
   };
 }

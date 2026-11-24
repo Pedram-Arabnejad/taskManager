@@ -7,6 +7,8 @@ declare global {
       requestId: string;
       /** Set by the authenticate middleware; undefined on public routes. */
       auth?: AccessTokenClaims;
+      /** Set by validateQuery, because req.query is read-only in Express 5. */
+      validatedQuery?: unknown;
     }
   }
 }

@@ -9,6 +9,8 @@ import { notFoundHandler } from './presentation/http/middlewares/not-found';
 import { requestId } from './presentation/http/middlewares/request-id';
 import { createAuthRouter } from './presentation/http/routes/auth.routes';
 import { createHealthRouter } from './presentation/http/routes/health.routes';
+import { createProjectRouter } from './presentation/http/routes/project.routes';
+import { createTaskRouter } from './presentation/http/routes/task.routes';
 
 const BODY_LIMIT = '100kb';
 const HEALTH_PATH = '/health';
@@ -50,6 +52,23 @@ export function createApp(container: AppContainer): Express {
     `${API_PREFIX}/auth`,
     createAuthRouter({
       controller: container.authController,
+      authenticate: container.authenticate,
+    }),
+  );
+
+  app.use(
+    `${API_PREFIX}/projects`,
+    createProjectRouter({
+      projectController: container.projectController,
+      taskController: container.taskController,
+      authenticate: container.authenticate,
+    }),
+  );
+
+  app.use(
+    `${API_PREFIX}/tasks`,
+    createTaskRouter({
+      controller: container.taskController,
       authenticate: container.authenticate,
     }),
   );
